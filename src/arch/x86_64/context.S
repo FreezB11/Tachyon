@@ -35,8 +35,8 @@ ctx_switch:
 
     /* load the context to the regis */
     movq 32(%rsi), %rbx
-    movq 72(%rsi), %r12
-    movq 80(%rsi), %r13
+    movq 72(%rsi), %r12 /* arg */
+    movq 80(%rsi), %r13 /* fn  */
     movq 88(%rsi), %r14
     movq 96(%rsi), %r15
 
