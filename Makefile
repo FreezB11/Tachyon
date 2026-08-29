@@ -6,8 +6,9 @@ CFLAGS  := -g -fno-omit-frame-pointer -Wall -Wextra -Iinclude -Isrc/arch/x86_64
 BUILD       := build
 OBJ_DIR     := $(BUILD)/obj
 BIN_DIR     := $(BUILD)/bin
+LIB_DIR 	:= $(BUILD)/lib
 
-TARGET      := $(BUILD)/libtachyon.a
+TARGET      := $(LIB_DIR)/libtachyon.a
 
 # Sources
 SRC_C       := $(shell find src/ -name "*.c")
@@ -26,7 +27,7 @@ OBJECTS     := $(OBJ_C) $(OBJ_ASM)
 all: $(TARGET)
 
 # Static library
-$(TARGET): $(OBJECTS) | $(BUILD)
+$(TARGET): $(OBJECTS) | $(LIB_DIR)
 	$(AR) rcs $@ $^
 
 # Compile C  — create parent dir first
@@ -49,12 +50,15 @@ $(OBJ_DIR):
 $(BIN_DIR):
 	@mkdir -p $(BIN_DIR)
 
+$(LIB_DIR):
+	@mkdir -p $(LIB_DIR)
+
 # Benchmark 
 BENCH_SRC   := benchmarks/ctx_switch_bench.c
 BENCH_BIN   := $(BIN_DIR)/ctx_switch_bench
 
 bench: $(TARGET) | $(BIN_DIR)
-	$(CC) $(CFLAGS) $(BENCH_SRC) -L$(BUILD) -ltachyon -o $(BENCH_BIN)
+	$(CC) $(CFLAGS) $(BENCH_SRC) -L$(LIB_DIR) -ltachyon -o $(BENCH_BIN)
 	taskset -c 0 $(BENCH_BIN)
 
 # Tests
@@ -68,7 +72,7 @@ test: $(TEST_BINS)
 	done
 
 $(BIN_DIR)/%: test/%.test.c $(TARGET) | $(BIN_DIR)
-	$(CC) $(CFLAGS) $< -L$(BUILD) -ltachyon -o $@
+	$(CC) $(CFLAGS) $< -L$(LIB_DIR) -ltachyon -o $@
 
 # Clean
 # Just nuke build/ — source tree stays untouched
