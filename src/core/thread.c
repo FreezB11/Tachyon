@@ -1,13 +1,15 @@
-#include <core/thread.h>
-#include <core/sched.h>
-#include <arch/x86_64/context.h>
+#include "../../include/core/thread.h"
+#include "../../include/core/sched.h"
+#include "../../include/marena.h"
+#include "../../include/arch/x86_64/context.h"
 
 #include <stdlib.h>
+#include <stdint.h>
 
 // defined in context.S
 extern void thread_entry(void);
 
-void t_init(context_t* ctx, void* stack, size_t stack_size, void (*fn)(void*), void* arg) {
+void thread_ctx_init(context_t* ctx, void* stack, size_t stack_size, void (*fn)(void*), void* arg) {
     uint64_t* stack_top = (uint64_t*)((uint8_t*)stack + stack_size);
 
     // 16-byte align per SysV ABI
@@ -45,7 +47,7 @@ thread_t* t_create(void (*fn)(void*), void* arg) {
     t->state      = READY;
     t->tid        = g_sched.next_tid++;
 
-    t_init(&t->ctx, stack, STACK_SIZE, fn, arg);
+    thread_ctx_init(&t->ctx, stack, STACK_SIZE, fn, arg);
     return t;
 }
 
