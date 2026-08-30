@@ -38,7 +38,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run tests
+      - name: Run tests (malloc-backed stacks)
         run: |
           make
           make test
+
+      - name: Run tests (marena-backed stacks)
+        run: |
+          make clean
+          make USE_MARENA=1
+          make USE_MARENA=1 test
