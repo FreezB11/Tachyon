@@ -37,7 +37,7 @@ thread_t* t_create(void (*fn)(void*), void* arg) {
     thread_t* t = malloc(sizeof(thread_t));
     if (!t) return NULL;
 
-    void* stack = malloc(STACK_SIZE);
+    void* stack = marena_alloc(threads_ctx_arena);
     if (!stack) { free(t); return NULL; }
 
     t->fn         = fn;

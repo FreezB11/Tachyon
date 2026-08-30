@@ -1,10 +1,15 @@
-#include "tachyon.h"
-#include "core/sched.h"
-#include "core/thread.h"
-#include "arch/x86_64/context.h"
+#include "../include/tachyon.h"
+#include "../include/core/sched.h"
+#include "../include/core/thread.h"
+#include "../include/arch/x86_64/context.h"
+#include "../include/marena.h"
+
+slab *threads_ctx_arena;
 
 /* tachyon_init*/
 void _tachyon_init() {
+    threads_ctx_arena = malloc(sizeof(slab));
+    marena_init(threads_ctx_arena, STACK_SIZE);
     sched_init();
 }
 
