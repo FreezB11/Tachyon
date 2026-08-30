@@ -1,27 +1,28 @@
 #pragma once
 
-#define THREADS 4 // here i say that we hold 4 threads
-#define FACTOR 1 // this is how much each thread will take for now that is 1KiB
-#define CHUNK ((THREADS)*(FACTOR)*1024) // for now its 4KiB
-
+#define CHUNKS 64
 #include <stdint.h>
 #include <sys/mman.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 typedef void ptr;
 
 typedef struct slab_t{
-    uint8_t *stack;
-    struct slab_t *nxt;
+    uint64_t free_map; /* we will use 1 for occupied and 0 for free */
+    size_t chunk_size; /* the chunk i.e, 10KiB for the thread stack can vary later */
+    void *start;       /* start of the slab where we have the ptr offset/base */
+    struct slab_t *nxt;/* we alloc next slab when the current slab is fully occupied and lets say has 90% filled */
 }slab;
 
-extern ptr* threads_areana;
-extern ptr* threads_ctx_arena;
+extern slab *threads_areana;
+extern slab *threads_ctx_arena;
 
 /**
  * @note: we are asking kernel for 2MiB page here 
  * and that memory will be handled by us internally
  */
-bool marena_init();
-slab* marena_alloc();
+bool marena_init(slab *a, size_t chunk_size);
+void *marena_alloc(slab *a);
+bool marena_free(void *ptr);
