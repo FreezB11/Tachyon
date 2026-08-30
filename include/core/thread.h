@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>   /* missing — needed for uint64_t */
 
-#define STACK_SIZE 1024   /* 1Kib */
+#define STACK_SIZE 1024 * 10   /* 10Kib */
 
 typedef enum{
     READY, // ready to run
