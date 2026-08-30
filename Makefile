@@ -1,6 +1,12 @@
 CC      := gcc
 AR      := ar
-CFLAGS  := -g -fno-omit-frame-pointer -Wall -Wextra -Iinclude -Isrc/arch/x86_64
+
+# USE_MARENA=1 make   -> builds with marena-backed stacks
+# USE_MARENA=0 (or unset) -> malloc-backed stacks (default)
+USE_MARENA ?= 0
+EXTRA_CFLAGS := -DUSE_MARENA=$(USE_MARENA)
+
+CFLAGS  := -g -fno-omit-frame-pointer -Wall -Wextra -Iinclude -Isrc/arch/x86_64 $(EXTRA_CFLAGS)
 
 # Build dir 
 BUILD       := build
