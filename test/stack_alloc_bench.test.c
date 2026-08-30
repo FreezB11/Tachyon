@@ -37,7 +37,7 @@ static void phase_random_churn(int total_ops, int cap) {
 
         if (want_create) {
             pending[count++] = tachyon_thread(worker, NULL);
-        } else {
+        } else /*  */{
             /* join the oldest pending thread, then compact */
             tachyon_join(pending[0]);
             for (int j = 1; j < count; j++)
