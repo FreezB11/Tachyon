@@ -6,6 +6,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+/* 0 = malloc-backed stacks, 1 = marena-backed stacks */
+#ifndef USE_MARENA
+#define USE_MARENA 0
+#endif
+
 // defined in context.S
 extern void thread_entry(void);
 
@@ -37,7 +42,11 @@ thread_t* t_create(void (*fn)(void*), void* arg) {
     thread_t* t = malloc(sizeof(thread_t));
     if (!t) return NULL;
 
+#if USE_MARENA
     void* stack = marena_alloc(threads_ctx_arena);
+#else
+    void* stack = malloc(STACK_SIZE);
+#endif
     if (!stack) { free(t); return NULL; }
 
     t->fn         = fn;
@@ -53,6 +62,12 @@ thread_t* t_create(void (*fn)(void*), void* arg) {
 
 void t_destroy(thread_t* t) {
     if (!t) return;
+
+#if USE_MARENA
+    marena_free(threads_ctx_arena, t->stack);
+#else
     free(t->stack);
+#endif
+
     free(t);
 }
