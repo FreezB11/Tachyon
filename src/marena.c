@@ -37,4 +37,19 @@ void *marena_alloc(slab *a){
             return  (uint8_t *)a->start + (i*a->chunk_size);
         }
     }
+    return NULL;
+}
+
+bool marena_free(slab *a, void *ptr){
+    if(!a || !ptr) return false;
+ 
+    /* which chunk number is this pointer? */
+    ptrdiff_t offset = (uint8_t *)ptr - (uint8_t *)a->start;
+    if(offset < 0) return false;
+ 
+    size_t index = (size_t)offset / a->chunk_size;
+    if(index >= CHUNKS) return false;
+ 
+    a->free_map &= ~(1ULL << index); /* mark that chunk free again */
+    return true;
 }

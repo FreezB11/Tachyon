@@ -25,4 +25,4 @@ extern slab *threads_ctx_arena;
  */
 bool marena_init(slab *a, size_t chunk_size);
 void *marena_alloc(slab *a);
-bool marena_free(void *ptr);
+bool marena_free(slab *a, void *ptr);
